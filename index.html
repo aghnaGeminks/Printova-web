@@ -217,6 +217,15 @@
         .dialog-heading h2 { margin: 0; font-size: 20px; letter-spacing: -.6px; }
         .dialog-close { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: white; color: var(--ink); font-size: 21px; cursor: pointer; }
         .preview-dialog .banner-canvas { border-radius: 12px; }
+        .closure-dialog { width: min(420px, calc(100% - 32px)); max-width: none; padding: 0; border: 1px solid var(--line); border-radius: 24px; background: var(--white); color: var(--ink); box-shadow: 0 26px 90px rgba(12,30,22,.3); }
+        .closure-dialog[open] { animation: dialog-enter .2s ease-out; }
+        .closure-dialog::backdrop { background: rgba(15,28,23,.64); backdrop-filter: blur(4px); }
+        .closure-content { padding: 32px; text-align: center; }
+        .closure-icon { display: grid; width: 58px; height: 58px; margin: 0 auto 18px; place-items: center; border-radius: 18px; background: #fff3dc; color: #a9680b; }
+        .closure-icon svg { width: 27px; height: 27px; }
+        .closure-content h2 { margin: 0 0 9px; font-size: 23px; letter-spacing: -.8px; }
+        .closure-content p { margin: 0 0 23px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+        .closure-content .button { width: 100%; }
         .dialog-note { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
         footer { padding: 25px 0; border-top: 1px solid var(--line); }
         .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; color: var(--muted); font-size: 12px; }
@@ -453,6 +462,17 @@
         </dialog>
     </main>
 
+    <dialog class="closure-dialog" id="sunday-closed-dialog" aria-labelledby="sunday-closed-title" aria-describedby="sunday-closed-description">
+        <div class="closure-content">
+            <span class="closure-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            </span>
+            <h2 id="sunday-closed-title">Hari Minggu tutup</h2>
+            <p id="sunday-closed-description">Pemesanan sedang libur hari ini. Silakan kembali dan pesan lagi pada hari Senin sampai Sabtu.</p>
+            <button class="button" id="close-sunday-closed" type="button">Mengerti</button>
+        </div>
+    </dialog>
+
     <dialog class="preview-dialog" id="preview-dialog" aria-labelledby="preview-title">
         <div class="dialog-content">
             <div class="dialog-heading">
@@ -511,6 +531,7 @@
         const continueWhatsappButton = document.querySelector("#continue-whatsapp");
         const orderDialog = document.querySelector("#order-dialog");
         const previewDialog = document.querySelector("#preview-dialog");
+        const sundayClosedDialog = document.querySelector("#sunday-closed-dialog");
         const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxIethoHMPqNORYktzxp4nHpYglnXu4kgHizA5TzCCrfcqbWdEKqaZlbvz-EtTeoHgt/exec";
         let logoPreviewUrl = "";
         let savedWhatsappUrl = "";
@@ -523,7 +544,9 @@
         }
 
         function showSundayClosedNotice() {
-            window.alert("Hari Minggu tutup. Pemesanan hanya dapat dilakukan Senin sampai Sabtu.");
+            if (!sundayClosedDialog.open) {
+                sundayClosedDialog.showModal();
+            }
         }
 
         function clearLogoPreview() {
@@ -567,6 +590,16 @@
 
         document.querySelector("#close-order-dialog").addEventListener("click", () => {
             orderDialog.close();
+        });
+
+        document.querySelector("#close-sunday-closed").addEventListener("click", () => {
+            sundayClosedDialog.close();
+        });
+
+        sundayClosedDialog.addEventListener("click", (event) => {
+            if (event.target === sundayClosedDialog) {
+                sundayClosedDialog.close();
+            }
         });
 
         orderDialog.addEventListener("click", (event) => {
